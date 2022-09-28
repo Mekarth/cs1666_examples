@@ -42,14 +42,18 @@ fn setup(
 	let bird_atlas_len = bird_atlas.textures.len();
 	let bird_atlas_handle = texture_atlases.add(bird_atlas);
 
-	//TODO: load the sprite sheet stored in `bricks.png`
+	let brick_handle = asset_server.load("bricks.png");
+	let brick_atlas = TextureAtlas::from_grid(brick_handle, Vec2::splat(TILE_SIZE), 4, 1);
+	let brick_atlas_len = brick_atlas.textures.len();
+	let brick_atlas_handle = texture_atlases.add(brick_atlas);
 
-	//<Your code here>
+	println!("Number of texture atlases: {}", texture_atlases.len());
+	println!("Number of brick textures: {}", brick_atlas_len);
 
 	commands.spawn_bundle(OrthographicCameraBundle::new_2d());
 
 	let mut rng = rand::thread_rng();
-	let x_bound = WIN_W/2. - TILE_SIZE/2.;
+	let x_bound = WIN_W/2. - TILE_SIZE/2.; // 
 	let y_bound = WIN_H/2. - TILE_SIZE/2.;
 
 	for i in 0..NUM_BIRDS {
@@ -75,8 +79,54 @@ fn setup(
 
 	}
 
+	// for i in 0..=13 {
+	// 	let t = Vec3::new(
+	// 		rng.gen_range(-x_bound..x_bound),
+	// 		rng.gen_range(-y_bound..y_bound),
+	// 		1000.,
+	// 	);
+	// 	commands
+	// 		.spawn_bundle(SpriteSheetBundle {
+	// 			texture_atlas: brick_atlas_handle.clone(),
+	// 			transform: Transform {
+	// 				translation: t,
+	// 				..default()
+	// 			},
+	// 			sprite: TextureAtlasSprite {
+	// 				index: i % brick_atlas_len,
+	// 				..default()
+	// 			},
+	// 			..default()
+	// 		})
+	// 		.insert(Brick);
+
+	// }
+
 	//TODO: Place brick tiles along the bottom of the entire window
 
-	//<Your code here>
+	let num_bricks: usize = (WIN_W/TILE_SIZE) as usize + 1;
+	let mut x = -x_bound;
+	for i in 0..num_bricks {
+		let t = Vec3::new(
+			x,
+			-y_bound,
+			900.,
+		);
+		commands
+			.spawn_bundle(SpriteSheetBundle {
+				texture_atlas: brick_atlas_handle.clone(),
+				transform: Transform {
+					translation: t,
+					..default()
+				},
+				sprite: TextureAtlasSprite{
+					index: i % brick_atlas_len,
+					..default()
+				},
+				..default()
+			})
+			.insert(Brick);
+		x = x + TILE_SIZE;
+	}
 	
 }
