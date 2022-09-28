@@ -53,7 +53,9 @@ fn setup(
 	commands.spawn_bundle(Camera2dBundle::default());
 
 	let mut rng = rand::thread_rng();
-	let x_bound = WIN_W/2. - TILE_SIZE/2.; // 
+	// from center of the screen to half a tile from edge
+	// so the tile will never be "cut in half" by edge of screen
+	let x_bound = WIN_W/2. - TILE_SIZE/2.;
 	let y_bound = WIN_H/2. - TILE_SIZE/2.;
 
 	for i in 0..NUM_BIRDS {
@@ -79,37 +81,18 @@ fn setup(
 
 	}
 
-	// for i in 0..=13 {
-	// 	let t = Vec3::new(
-	// 		rng.gen_range(-x_bound..x_bound),
-	// 		rng.gen_range(-y_bound..y_bound),
-	// 		1000.,
-	// 	);
-	// 	commands
-	// 		.spawn_bundle(SpriteSheetBundle {
-	// 			texture_atlas: brick_atlas_handle.clone(),
-	// 			transform: Transform {
-	// 				translation: t,
-	// 				..default()
-	// 			},
-	// 			sprite: TextureAtlasSprite {
-	// 				index: i % brick_atlas_len,
-	// 				..default()
-	// 			},
-	// 			..default()
-	// 		})
-	// 		.insert(Brick);
-
-	// }
-
 	//TODO: Place brick tiles along the bottom of the entire window
 
+	// int(1280/100) = 12, add 1 to cover full width
 	let num_bricks: usize = (WIN_W/TILE_SIZE) as usize + 1;
+	// starting from left hand side of screen
+	// y stays the same at the bottom
 	let mut x = -x_bound;
+	let y = -y_bound;
 	for i in 0..num_bricks {
 		let t = Vec3::new(
 			x,
-			-y_bound,
+			y,
 			900.,
 		);
 		commands
@@ -126,6 +109,7 @@ fn setup(
 				..default()
 			})
 			.insert(Brick);
+		// place the next tile on positive x direction
 		x = x + TILE_SIZE;
 	}
 	
