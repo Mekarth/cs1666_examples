@@ -81,8 +81,6 @@ fn setup(
 
 	}
 
-	//TODO: Place brick tiles along the bottom of the entire window
-
 	// int(1280/100) = 12, add 1 to cover full width
 	let num_bricks: usize = (WIN_W/TILE_SIZE) as usize + 1;
 	// starting from left hand side of screen
