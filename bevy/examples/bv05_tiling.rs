@@ -50,7 +50,7 @@ fn setup(
 	println!("Number of texture atlases: {}", texture_atlases.len());
 	println!("Number of brick textures: {}", brick_atlas_len);
 
-	commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+	commands.spawn_bundle(Camera2dBundle::default());
 
 	let mut rng = rand::thread_rng();
 	let x_bound = WIN_W/2. - TILE_SIZE/2.; // 

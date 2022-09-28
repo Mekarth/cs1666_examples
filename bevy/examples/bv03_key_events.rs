@@ -23,7 +23,7 @@ fn main() {
 }
 
 fn setup(mut commands: Commands) {
-	commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+	commands.spawn_bundle(Camera2dBundle::default());
 }
 
 //TODO: Write a system to change the clear color in response to a keypress

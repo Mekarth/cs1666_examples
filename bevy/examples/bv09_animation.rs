@@ -68,7 +68,7 @@ fn setup(
 	asset_server: Res<AssetServer>,
 	mut texture_atlases: ResMut<Assets<TextureAtlas>>,	
 ){
-	commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+	commands.spawn_bundle(Camera2dBundle::default());
 
 	let bg_texture_handle = asset_server.load("small_bg.png");
 
