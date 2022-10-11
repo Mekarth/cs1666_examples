@@ -46,11 +46,15 @@ fn main() {
 
 	//TODO: Use a for loop to print out the ints from 0-9 (inclusive)
 
-	//<Your code here>
+	for i in 0..10 { // The last number is always excluded
+		println!("{i}"); // OR println!("{}, ", i);
+	}
 
 	//TODO: Use a for loop to print out the ints from 1-10 (inclusive)
 
-	//<Your code here>
+	for i in 1..11 { // The last number is always excluded
+		println!("{i}");
+	}
 
 	// loop
 	let mut n = 6;

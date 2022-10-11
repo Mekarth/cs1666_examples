@@ -34,7 +34,20 @@ trait Shape {
 
 //TODO: Provide an implementation of the Shape trait for Rectangle
 
-//<Your code here>
+impl Shape for Rectangle {
+	fn area(&self) -> i32 {
+		self.width * self.height
+	}
+
+	fn contains(&self, p: Point) -> bool {
+		let lowest_x = self.top_left.0;
+		let lowest_y = self.top_left.1;
+		let highest_x = lowest_x + self.width;
+		let highest_y = lowest_y + self.height;
+
+		(lowest_x < p.0 && p.0 < highest_x) && (lowest_y < p.1 && p.1 < highest_y)
+	}
+}
 
 fn print_area<T: Shape> (some_shape: T) {
 	println!("Shape's area: {}", some_shape.area());

@@ -13,7 +13,8 @@ fn main() {
 
 	//TODO: Assign 6.1 to x without modifying the code above
 	
-	//<Your code here>
+	let x: f32 = 6.1;
+	//OR let x = 6.1; //Shadow x
 
 	println!("This is float x: {}", x);
 
