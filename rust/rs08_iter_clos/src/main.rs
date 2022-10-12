@@ -47,9 +47,23 @@ fn main() {
 
 	//TODO: Create a vector of all of the odd values in ints using iterators
 
-	//<Your code here>
+	let odd_ints: Vec<_> = ints.iter().filter(|x| *x % 2 == 1).collect();
+	println!();
+	println!("Odd Integers:");
+	for oi in odd_ints {
+		println!("\t{}", oi);
+	}
 
 	//TODO: Create a vector of double all of the even values in ints using iterators
 
-	//<Your code here>
+	let even_ints: Vec<_> = ints.iter().filter(|x| *x % 2 == 0).collect();
+	let mut double_even_ints = Vec::new();
+	for eint in even_ints {
+		double_even_ints.push(eint*2);
+	}
+	println!();
+	println!("Doubled Even Integers:");
+	for dei in double_even_ints {
+		println!("\t{}", dei);
+	}
 }

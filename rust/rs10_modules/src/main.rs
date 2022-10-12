@@ -1,6 +1,7 @@
 mod indirect;
 mod nester;
 mod shy;
+mod ignored; // Wasn't here before 
 
 mod direct {
 	pub fn hi() {
