@@ -8,6 +8,21 @@ const WIN_W: f32 = 1280.;
 const WIN_H: f32 = 720.;
 const PLAYER_SZ: f32 = 32.;
 
+const PLAYER_SPEED: f32 = 500.;
+const ACCEL_RATE: f32 = 2000.;
+
+// use a velocity component to track the player's velocity
+#[derive(Component)]
+struct Velocity {
+	velocity: Vec2,
+}
+
+impl Velocity {
+	fn new() -> Self {
+		Self { velocity: Vec2::splat(0.) }
+	}
+}
+
 #[derive(Component)]
 struct Player;
 
@@ -39,41 +54,101 @@ fn setup(mut commands: Commands) {
 			},
 			..default()
 		})
+		.insert(Velocity::new())
 		.insert(Player);
 }
 
 fn move_player(
+	time: Res<Time>,
 	input: Res<Input<KeyCode>>,
-	mut player: Query<&mut Transform, With<Player>>,
+	mut player: Query<(&mut Transform, &mut Velocity), With<Player>>,
 ){
-	let mut player_transform = player.single_mut();
+	let (mut player_transform, mut player_velocity) = player.single_mut();
 
-	let mut x_vel = 0.;
-	let mut y_vel = 0.;
+	let mut deltav = Vec2::splat(0.);
+
+	//let mut x_vel = 0.;
+	//let mut y_vel = 0.;
 
 	if input.pressed(KeyCode::A) {
-		x_vel -= 5.;
+		deltav.x -= 1.;
 	}
 
 	if input.pressed(KeyCode::D) {
-		x_vel += 5.;
+		deltav.x += 1.;
 	}
 
 	if input.pressed(KeyCode::W) {
-		y_vel += 5.;
+		deltav.y += 1.;
 	}
 
 	if input.pressed(KeyCode::S) {
-		y_vel -= 5.;
+		deltav.y -= 1.;
 	}
 
-	player_transform.translation.x += x_vel;
-	player_transform.translation.y += y_vel;
+	// calculating by deltat instead of just relying on frames *should* normalize for different framerates
+	let deltat = time.delta_seconds();
+	let acc = ACCEL_RATE * deltat;
+
+	// calculate the velocity vector by multiplying it with the acceleration constant
+	// normalizing and clamping prevents the diagonal speed boost
+	player_velocity.velocity = if deltav.length() > 0. {
+		(player_velocity.velocity + (deltav.normalize_or_zero() * acc)).clamp_length_max(PLAYER_SPEED)
+	}
+	else if player_velocity.velocity.length() > acc {
+		player_velocity.velocity + (player_velocity.velocity.normalize_or_zero() * -acc)
+	}
+	else {
+		Vec2::splat(0.)
+	};
+	let change = player_velocity.velocity * deltat;
+
+	let new_pos = player_transform.translation + Vec3::new(
+		change.x,
+		0.,
+		0.,
+	);
+	// check for player staying within the window with new x position
+	if new_pos.x >= -(WIN_W/2.) + PLAYER_SZ/2. && new_pos.x <= WIN_W/2. - PLAYER_SZ/2. {
+		player_transform.translation = new_pos;
+	}
+
+	let new_pos = player_transform.translation + Vec3::new(
+		0.,
+		change.y,
+		0.,
+	);
+	// check for player staying within the window with new y position
+	if new_pos.y >= -(WIN_H/2.) + PLAYER_SZ/2. && new_pos.y <= WIN_H/2. - PLAYER_SZ/2. {
+		player_transform.translation = new_pos;
+	}
+
+
+
+	/*if player_transform.translation.x + x_vel < (-WIN_W / 2.) + (PLAYER_SZ / 2.) {
+		player_transform.translation.x = (-WIN_W / 2.) + (PLAYER_SZ / 2.);
+	}
+	else if player_transform.translation.x + x_vel > (WIN_W / 2.) - (PLAYER_SZ / 2.) {
+		player_transform.translation.x = (WIN_W / 2.) - (PLAYER_SZ / 2.);
+	}
+	else {
+		player_transform.translation.x += x_vel;
+	}
+
+	if player_transform.translation.y + y_vel < (-WIN_H / 2.) + (PLAYER_SZ / 2.) {
+		player_transform.translation.y = (-WIN_H / 2.) + (PLAYER_SZ / 2.);
+	}
+	else if player_transform.translation.y + y_vel > (WIN_H / 2.) - (PLAYER_SZ / 2.) {
+		player_transform.translation.y = (WIN_H / 2.) - (PLAYER_SZ / 2.);
+	}
+	else {
+		player_transform.translation.y += y_vel;
+	}*/
 }
 
 /* TODO: 
- * Can we slowly ramp up to speed limit instead of instantly hitting it?
- * Can we normalize behavior on different refresh rates?
- * How do we stay inside the window?
+ * Can we slowly ramp up to speed limit instead of instantly hitting it? - Use vector math
+ * Can we normalize behavior on different refresh rates? - use a timer
+ * How do we stay inside the window? - if a transform goes out of bounds, normalize to window bounds
  * How do we avoid breaking the speed limit on the diagonal?
  */

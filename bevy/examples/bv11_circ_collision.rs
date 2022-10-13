@@ -43,7 +43,19 @@ impl Circle {
 fn my_circ_collision(a_translation: Vec3, a_rad: f32, b_translation: Vec3, b_rad: f32) -> bool {
 	//TODO: Write a circular collision helper function
 
-	//<Your code here>
+	let combined_radius: f32 = a_rad + b_rad;
+
+	if a_translation.z == b_translation.z {	// check that both entities are in the same plane
+		let x_diff: f32 = (a_translation.x - b_translation.x).abs();
+		let y_diff: f32 = (a_translation.y - b_translation.y).abs();
+		let distance_sq: f32 = (x_diff * x_diff) + (y_diff * y_diff);
+		let comb_rad_sq: f32 = combined_radius * combined_radius;
+		if comb_rad_sq > distance_sq {	// distance between the two circles is less than their combined radii, they must collide
+			return true;
+		}
+	}
+
+	return false;
 }
 
 fn main() {

@@ -1,6 +1,7 @@
 use bevy::{
 	window::PresentMode,
 	prelude::*,	
+	sprite::collide_aabb,
 };
 use std::convert::From;
 
@@ -12,6 +13,8 @@ const PLAYER_SIZE: f32 = 32.;
 const PLAYER_SPEED: f32 = 300.;
 // 1px/frame^2 @60Hz == 3600px/s^2
 const ACCEL_RATE: f32 = 3600.;
+// need this for collide
+const PLAYER_SIZE_VEC: Vec2 = Vec2::splat(PLAYER_SIZE);
 
 #[derive(Component)]
 struct Player;
@@ -31,6 +34,8 @@ impl Velocity {
 struct Block;
 
 struct Sides {
+// struct not used since bevy::sprite::collide_aabb has its own Collide enum
+/*struct Sides {
 	top: f32,
 	bottom: f32,
 	left: f32,
@@ -45,15 +50,15 @@ impl From<Vec3> for Sides {
 			left: pos.x - PLAYER_SIZE/2.,
 			right: pos.x + PLAYER_SIZE/2.,
 		}
-	}
+	}*/
 }
 
 // Don't bother using this, use bevy::sprite::collide_aabb::collide()
-fn my_collision(a_pos: Vec3, b_pos: Vec3) -> bool {
+/*fn my_collision(a_pos: Vec3, b_pos: Vec3) -> bool {
 	//TODO: Write a rectangular collision helper function
 
 	//<Your code here>
-}
+}*/
 
 fn main() {
 	App::new()
@@ -152,22 +157,42 @@ fn move_player(
 		0.,
 		0.,
 	);
-	if !my_collision(new_pos, bt.translation)
+	/*if !my_collision(new_pos, bt.translation)
 		&& new_pos.x >= -(WIN_W/2.) + PLAYER_SIZE/2.
 		&& new_pos.x <= WIN_W/2. - PLAYER_SIZE/2.
 	{
 		pt.translation = new_pos;
-	}
+	}*/
+	let collide_result = collide_aabb::collide(new_pos, PLAYER_SIZE_VEC, bt.translation, PLAYER_SIZE_VEC);
+	match collide_result {
+		Some(_) => (),	// do nothing if collision
+
+		None	=> if new_pos.x >= -(WIN_W/2.) + PLAYER_SIZE/2.
+						&& new_pos.x <= WIN_W/2. - PLAYER_SIZE/2. 
+					{
+						pt.translation = new_pos;
+					},
+	} 
 
 	let new_pos = pt.translation + Vec3::new(
 		0.,
 		change.y,
 		0.,
 	);
-	if !my_collision(new_pos, bt.translation)
+	/*if !my_collision(new_pos, bt.translation)
 		&& new_pos.y >= -(WIN_H/2.) + PLAYER_SIZE/2.
 		&& new_pos.y <= WIN_H/2. - PLAYER_SIZE/2.
 	{
 		pt.translation = new_pos;
-	}
+	}*/
+	let collide_result = collide_aabb::collide(new_pos, PLAYER_SIZE_VEC, bt.translation, PLAYER_SIZE_VEC);
+	match collide_result {
+		Some(_) => (),	// do nothing if collision
+
+		None	=> if new_pos.y >= -(WIN_H/2.) + PLAYER_SIZE/2.
+						&& new_pos.y <= WIN_H/2. - PLAYER_SIZE/2. 
+					{
+						pt.translation = new_pos;
+					},
+	} 
 }

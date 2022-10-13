@@ -52,7 +52,7 @@ fn main() {
 
 	//TODO: Use a for loop to print out the ints from 1-10 (inclusive)
 
-	for i in 1..11 { // The last number is always excluded
+	for i in 1..=10 { // Adding equals makes it inclusive
 		println!("{i}");
 	}
 
